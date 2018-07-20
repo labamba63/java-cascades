@@ -26,7 +26,6 @@ public class TemplateIdGatewayImpl implements TemplateIdGateway {
     private static final Logger DEFAULT_LOGGER = LoggerFactory.getLogger(TemplateIdGatewayImpl.class);
     private static final TemplateIdMapper DEFAULT_TEMPLATE_ID_MAPPER = new TemplateIdMapper();
     private static final String TEMPLATE_ID_FIELD = "templateId";
-    private static final int RADIX_36 = 36;
     private EntityManager entityManager;
     private Logger logger;
     private final TemplateIdMapper templateIdMapper;
@@ -111,4 +110,16 @@ public class TemplateIdGatewayImpl implements TemplateIdGateway {
         }
     }
 
+    @Override
+    public void deleteTemplate(pl.gov.coi.cascades.contract.domain.Template template) {
+        Template hibernateTemplate = templateIdMapper.toHibernateEntity(template);
+        entityManager.merge(hibernateTemplate);
+        if (logger.isInfoEnabled()) {
+            logger.info(new Eid("20180720:1200337")
+                .makeLogMessage(
+                    "Status Template changed to DELETED."
+                )
+            );
+        }
+    }
 }

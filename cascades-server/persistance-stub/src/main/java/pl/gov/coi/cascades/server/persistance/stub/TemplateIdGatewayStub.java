@@ -81,6 +81,21 @@ public final class TemplateIdGatewayStub implements TemplateIdGateway {
         setTemplate(template);
     }
 
+    @Override
+    public void deleteTemplate(Template template) {
+        Template templateNewStatus = Template.builder()
+            .id(template.getId())
+            .generatedId(template.getGeneratedId())
+            .name(template.getName())
+            .status(TemplateIdStatus.DELETED)
+            .isDefault(template.isDefault())
+            .serverId(template.getServerId())
+            .version(template.getVersion())
+            .build();
+
+        templates.replace(template.getGeneratedId(), template, templateNewStatus);
+    }
+
     public static Map<String, Template> getAllTemplates() {
         return templates;
     }

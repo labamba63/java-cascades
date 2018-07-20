@@ -27,4 +27,6 @@ public interface TemplateIdGateway {
      * @param template Given templateId to addTemplate.
      */
     void addTemplate(Template template);
+
+    void deleteTemplate(Template template);
 }

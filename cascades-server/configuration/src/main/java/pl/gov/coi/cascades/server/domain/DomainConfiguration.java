@@ -3,6 +3,7 @@ package pl.gov.coi.cascades.server.domain;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.gov.coi.cascades.server.domain.deletedatabase.DeleteDatabaseGatewayFacade;
+import pl.gov.coi.cascades.server.domain.deletetemplate.DeleteTemplateGatewayFacade;
 import pl.gov.coi.cascades.server.domain.launchdatabase.DatabaseIdGeneratorService;
 import pl.gov.coi.cascades.server.domain.launchdatabase.DatabaseNameGeneratorService;
 import pl.gov.coi.cascades.server.domain.launchdatabase.LaunchNewDatabaseGatewayFacade;
@@ -67,11 +68,29 @@ public class DomainConfiguration {
     }
 
     @Bean
+    DeleteTemplateGatewayFacade produceDeleteTemplateGateways(TemplateIdGateway templateIdGateway,
+                                                              DatabaseTemplateGateway databaseTemplateGateway) {
+        return new DeleteTemplateGatewayFacade(
+            templateIdGateway,
+            databaseTemplateGateway
+        );
+    }
+
+    @Bean
     pl.gov.coi.cascades.server.domain.deletedatabase.UseCase produceDeleteLaunchedDatabaseUseCase(
         DeleteDatabaseGatewayFacade facade) {
 
         return pl.gov.coi.cascades.server.domain.deletedatabase.UseCaseImpl.builder()
             .databaseGatewayFacade(facade)
+            .build();
+    }
+
+    @Bean
+    pl.gov.coi.cascades.server.domain.deletetemplate.UseCase produceDeleteTemplateDatabaseUseCase(
+        DeleteTemplateGatewayFacade facade) {
+
+        return pl.gov.coi.cascades.server.domain.deletetemplate.UseCaseImpl.builder()
+            .deleteTemplateGatewayFacade(facade)
             .build();
     }
 
