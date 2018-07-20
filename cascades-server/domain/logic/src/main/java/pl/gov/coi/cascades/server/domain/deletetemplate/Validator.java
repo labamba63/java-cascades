@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 import pl.gov.coi.cascades.contract.domain.Template;
+import pl.gov.coi.cascades.contract.domain.TemplateIdStatus;
 import pl.gov.coi.cascades.contract.service.Violation;
 import pl.gov.coi.cascades.server.domain.ViolationImpl;
 
@@ -28,15 +29,27 @@ class Validator {
         boolean isTemplateGeneratedIdPresent = validateTemplateGeneratedId();
         if (isTemplateGeneratedIdPresent) {
             validateIfTemplateGeneratedIdExistInDatabase();
+            validateIfTemplateHasStatusDeleted();
         }
         return response.isSuccessful();
     }
 
     private void validateIfTemplateGeneratedIdExistInDatabase() {
-        if (StringUtils.isNotBlank(templateGeneratedId)) {
-            if (template == null) {
+        if (template == null) {
+            Violation violationMessage = new ViolationImpl(
+                "Given id of template doesn't exist in database.",
+                PROPERTY_PATH_TEMPLATE_GENERATED_ID
+            );
+            response.addViolation(violationMessage);
+        }
+    }
+
+
+    private void validateIfTemplateHasStatusDeleted() {
+        if (template != null && template.getStatus() != null) {
+            if (template.getStatus().equals(TemplateIdStatus.DELETED)) {
                 Violation violationMessage = new ViolationImpl(
-                    "Given id of template doesn't exist in database.",
+                    "Given id of template has status as DELETED.",
                     PROPERTY_PATH_TEMPLATE_GENERATED_ID
                 );
                 response.addViolation(violationMessage);
